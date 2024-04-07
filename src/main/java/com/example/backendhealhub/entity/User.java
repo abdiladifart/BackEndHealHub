@@ -37,7 +37,8 @@ public class User {
     @Size(max = 100)
     @Column(nullable = false)
     @Getter @Setter
-    private String name;
+    private String username;
+
 
 
 }

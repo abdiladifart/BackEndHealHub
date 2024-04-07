@@ -13,4 +13,8 @@ public interface UserService {
     UserDTO registerUser(UserDTO userDTO);
 
     UserDTO loginUser(String email, String password);
+
+    UserDTO getUserByEmail(String email);
+
+    UserDTO getUserByName(String name);
 }

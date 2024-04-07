@@ -1,20 +1,22 @@
 package com.example.backendhealhub.controller;
-
 import com.example.backendhealhub.dto.UserDTO;
 import com.example.backendhealhub.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/api/auth")
 public class UserController {
 
     private final UserService userService;
+
 
     @Autowired
     public UserController(UserService userService) {
@@ -62,6 +64,22 @@ public class UserController {
         UserDTO loggedInUser = userService.loginUser(userDTO.getEmail(), userDTO.getPassword());
         return ResponseEntity.ok(loggedInUser);
     }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getUserProfile() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getName().equals("anonymousUser")) {
+            // Return an error response or prompt for authentication
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication is required");
+        }
+        String email = authentication.getName(); // The email should be the username set by Spring Security
+        System.out.println("Email from Authentication: " + email);
+        UserDTO userDTO = userService.getUserByEmail(email);
+        return ResponseEntity.ok(userDTO);
+    }
+
+
+
 }
 
 

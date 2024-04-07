@@ -9,7 +9,7 @@ public class UserDTO {
     private String email;
 
     @Getter @Setter
-    private String name;
+    private String Username;
 
     @Getter @Setter
     private String password;
@@ -18,10 +18,10 @@ public class UserDTO {
     // Constructors
     public UserDTO() {}
 
-    public UserDTO(Long id, String email, String name, String password) {
+    public UserDTO(Long id, String email, String Username, String password) {
         this.id = id;
         this.email = email;
-        this.name = name;
+        this.Username = Username;
         this.password = password;
     }
 

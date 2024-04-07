@@ -1,8 +1,10 @@
 package com.example.backendhealhub.service;
+import com.example.backendhealhub.config.JWTGenerator;
 import com.example.backendhealhub.dto.UserDTO;
 import com.example.backendhealhub.entity.User;
 import com.example.backendhealhub.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +22,20 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    private AuthenticationManager authenticationManager;
+
+    //    private RoleRepository roleRepository;
+    private JWTGenerator jwtGenerator;
+
+//    @Autowired
+//    public UserServiceImpl(UserRepository userRepository) {
+//        this.userRepository = userRepository;
+//    }
+    public UserServiceImpl(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder, JWTGenerator jwtGenerator) {
+        this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtGenerator = jwtGenerator;
     }
 
     @Override
@@ -30,10 +43,10 @@ public class UserServiceImpl implements UserService {
     public UserDTO createUser(UserDTO userDTO) {
         User user = new User();
         user.setEmail(userDTO.getEmail());
-        user.setName(userDTO.getName());
+        user.setUsername(userDTO.getUsername());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user = userRepository.save(user);
-        return new UserDTO(user.getId(), user.getEmail(), user.getName(), userDTO.getPassword());
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), userDTO.getPassword());
 
     }
 
@@ -42,9 +55,9 @@ public class UserServiceImpl implements UserService {
     public UserDTO updateUser(Long id, UserDTO userDTO) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         user.setEmail(userDTO.getEmail());
-        user.setName(userDTO.getName());
+        user.setUsername(userDTO.getUsername());
         user = userRepository.save(user);
-        return new  UserDTO(user.getId(), user.getEmail(), user.getName(), userDTO.getPassword());
+        return new  UserDTO(user.getId(), user.getEmail(), user.getUsername(), userDTO.getPassword());
     }
 
     @Override
@@ -55,12 +68,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO getUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        return new UserDTO(user.getId(), user.getEmail(), user.getName() , user.getPassword());
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername() , user.getPassword());
+    }
+
+    // Inside UserServiceImpl.java
+
+    public UserDTO getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), null); // Password is not included for security
+    }
+
+    @Override
+    public UserDTO getUserByName(String name) {
+        User user = userRepository.findByEmail(name)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), null);
+
     }
 
     @Override
     public List<UserDTO> getAllUsers() {
-        return userRepository.findAll().stream().map(user -> new UserDTO(user.getId(), user.getEmail(), user.getName() , user.getPassword())).collect(Collectors.toList());
+        return userRepository.findAll().stream().map(user -> new UserDTO(user.getId(), user.getEmail(), user.getUsername() , user.getPassword())).collect(Collectors.toList());
     }
 
     @Override
@@ -72,10 +101,10 @@ public class UserServiceImpl implements UserService {
 
         User user = new User();
         user.setEmail(userDTO.getEmail());
-        user.setName(userDTO.getName());
+        user.setUsername(userDTO.getUsername());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user = userRepository.save(user);
-        return new UserDTO(user.getId(), user.getEmail(), user.getName(), userDTO.getPassword());
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), userDTO.getPassword());
     }
 
     // Inside UserServiceImpl.java
@@ -88,7 +117,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Invalid credentials");
         }
 
-        return new UserDTO(user.getId(), user.getEmail(), user.getName(), null); // Avoid returning the password
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), null); // Avoid returning the password
     }
 
 }
