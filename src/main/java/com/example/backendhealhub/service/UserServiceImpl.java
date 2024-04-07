@@ -77,4 +77,18 @@ public class UserServiceImpl implements UserService {
         user = userRepository.save(user);
         return new UserDTO(user.getId(), user.getEmail(), user.getName(), userDTO.getPassword());
     }
+
+    // Inside UserServiceImpl.java
+
+    public UserDTO loginUser(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
+        }
+
+        return new UserDTO(user.getId(), user.getEmail(), user.getName(), null); // Avoid returning the password
+    }
+
 }

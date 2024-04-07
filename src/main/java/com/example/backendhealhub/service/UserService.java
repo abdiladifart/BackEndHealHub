@@ -11,4 +11,6 @@ public interface UserService {
     UserDTO getUserById(Long id);
     List<UserDTO> getAllUsers();
     UserDTO registerUser(UserDTO userDTO);
+
+    UserDTO loginUser(String email, String password);
 }
