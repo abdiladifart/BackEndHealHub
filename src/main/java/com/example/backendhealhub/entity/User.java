@@ -47,6 +47,8 @@ public class User {
     @Column (nullable = false)
     private String region;
 
-
+    @Getter @Setter
+    @Column (nullable = false)
+    private String type;
 
 }

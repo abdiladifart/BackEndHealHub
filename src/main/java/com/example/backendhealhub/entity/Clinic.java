@@ -19,11 +19,12 @@ public class Clinic {
     @NotBlank
     @Size(max = 100)
     @Column(nullable = false)
+    @Getter @Setter
     private String name;
 
     @Getter @Setter
     @Column(nullable = false)
-    private String City;
+    private String city;
 
     @Getter @Setter
     @Column (nullable = false)

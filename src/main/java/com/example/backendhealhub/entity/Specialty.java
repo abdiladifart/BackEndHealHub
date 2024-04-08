@@ -15,23 +15,20 @@ public class Specialty {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter @Setter
     private Long id;
 
     @NotBlank
     @Size(max = 100)
     @Column(nullable = false)
+    @Getter @Setter
     private String name;
 
     @OneToMany(mappedBy = "specialty")
+    @Getter @Setter
     private Set<Doctor> doctors;
 
-//    @Getter @Setter
-//    @Column(nullable = false)
-//    private String City;
-//
-//    @Getter @Setter
-//    @Column (nullable = false)
-//    private String region;
+
 
 }
 

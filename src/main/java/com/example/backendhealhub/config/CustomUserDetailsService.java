@@ -1,6 +1,5 @@
 package com.example.backendhealhub.config;
 
-import com.example.backendhealhub.entity.Role;
 import com.example.backendhealhub.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,7 +35,7 @@ public class CustomUserDetailsService  implements UserDetailsService {
 
 
 
-    private Collection<GrantedAuthority> mapRolesToAuthorities(List<Role> roles) {
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
-    }
+//    private Collection<GrantedAuthority> mapRolesToAuthorities(List<Role> roles) {
+//        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+//    }
 }

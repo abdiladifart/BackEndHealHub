@@ -2,8 +2,6 @@ package com.example.backendhealhub.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-
 public class UserDTO {
     private Long id;
 
@@ -11,7 +9,7 @@ public class UserDTO {
     private String email;
 
     @Getter @Setter
-    private String Username;
+    private String username;
 
     @Getter @Setter
     private String password;
@@ -22,19 +20,36 @@ public class UserDTO {
     @Getter @Setter
     private String region;
 
+    @Getter @Setter
+    private String role;
+
+    @Getter @Setter
+    private Long specialtyId;
+
     // Constructors
     public UserDTO() {}
 
     public UserDTO(Long id, String email, String Username, String password,String city, String region) {
         this.id = id;
         this.email = email;
-        this.Username = Username;
+        this.username = Username;
         this.password = password;
         this.city = city;
         this.region = region;
     }
+    public UserDTO(Long id, String email, String username, String password, String city, String region, String role, Long specialtyId) {
+        this.id = id;
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.city = city;
+        this.region = region;
+        this.role = role;
+        this.specialtyId = specialtyId; // Initialize the new specialtyId attribute
+    }
 
-
+//    public UserDTO(Long id, String email, String username, String city, String region, Object o) {
+//    }
 //    public UserDTO(Long id, String email, String username, Object o) {
 //        this.id = id;
 //        this.email = email;

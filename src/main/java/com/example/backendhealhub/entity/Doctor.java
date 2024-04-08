@@ -13,8 +13,10 @@ public class Doctor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter @Setter
     private Long id;
 
+    @Getter @Setter
     @NotBlank
     @Size(max = 100)
     @Column(nullable = false)
@@ -22,10 +24,16 @@ public class Doctor {
 
     @ManyToOne
     @JoinColumn(name = "specialty_id", nullable = false)
+    @Getter @Setter
     private Specialty specialty;
 
     @OneToMany(mappedBy = "doctor")
+    @Getter @Setter
     private Set<Appointment> appointments;
 
-    // Constructors, Getters, and Setters
+    @OneToOne
+    @JoinColumn(name = "user_id", unique = true, nullable = false)
+    @Getter @Setter
+    private User user; // Link to the User entity
+
 }
