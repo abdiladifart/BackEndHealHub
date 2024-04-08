@@ -25,6 +25,13 @@ public class Specialty {
     @OneToMany(mappedBy = "specialty")
     private Set<Doctor> doctors;
 
+//    @Getter @Setter
+//    @Column(nullable = false)
+//    private String City;
+//
+//    @Getter @Setter
+//    @Column (nullable = false)
+//    private String region;
 
 }
 

@@ -5,6 +5,9 @@ import com.example.backendhealhub.entity.User;
 import com.example.backendhealhub.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -45,8 +48,14 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDTO.getEmail());
         user.setUsername(userDTO.getUsername());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setCity(userDTO.getCity());
+        user.setRegion(userDTO.getRegion());
         user = userRepository.save(user);
-        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), userDTO.getPassword());
+        return new UserDTO(user.getId(), user.getEmail(),
+                user.getUsername(), userDTO.getPassword(),
+                user.getCity(),user.getRegion()
+
+        );
 
     }
 
@@ -57,7 +66,9 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDTO.getEmail());
         user.setUsername(userDTO.getUsername());
         user = userRepository.save(user);
-        return new  UserDTO(user.getId(), user.getEmail(), user.getUsername(), userDTO.getPassword());
+        return new  UserDTO(user.getId(), user.getEmail(),
+                user.getUsername(), userDTO.getPassword(),
+                user.getCity(),user.getRegion());
     }
 
     @Override
@@ -68,7 +79,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO getUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        return new UserDTO(user.getId(), user.getEmail(), user.getUsername() , user.getPassword());
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername() ,
+                       user.getPassword(), user.getCity(),user.getRegion()
+        );
     }
 
     // Inside UserServiceImpl.java
@@ -76,20 +89,20 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), null); // Password is not included for security
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(),user.getCity(),user.getRegion(), null); // Password is not included for security
     }
 
     @Override
     public UserDTO getUserByName(String name) {
         User user = userRepository.findByEmail(name)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), null);
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(),user.getCity(),user.getRegion() ,null);
 
     }
 
     @Override
     public List<UserDTO> getAllUsers() {
-        return userRepository.findAll().stream().map(user -> new UserDTO(user.getId(), user.getEmail(), user.getUsername() , user.getPassword())).collect(Collectors.toList());
+        return userRepository.findAll().stream().map(user -> new UserDTO(user.getId(), user.getEmail(), user.getUsername() ,user.getCity(),user.getRegion(), user.getPassword())).collect(Collectors.toList());
     }
 
     @Override
@@ -103,8 +116,14 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDTO.getEmail());
         user.setUsername(userDTO.getUsername());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setCity(userDTO.getCity());
+        user.setRegion(userDTO.getRegion());
         user = userRepository.save(user);
-        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), userDTO.getPassword());
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(),
+                userDTO.getPassword(),user.getCity(),user.getRegion()
+
+
+        );
     }
 
     // Inside UserServiceImpl.java
@@ -117,7 +136,21 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Invalid credentials");
         }
 
-        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), null); // Avoid returning the password
+
+
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), user.getCity(),user.getRegion(),null); // Avoid returning the password
     }
+
+
+//    @PostMapping("login")
+//    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDto loginDto){
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                        loginDto.getUsername(),
+//                        loginDto.getPassword()));
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        String token = jwtGenerator.generateToken(authentication);
+//        return new ResponseEntity<>(new AuthResponseDTO(token), HttpStatus.OK);
+//    }
 
 }

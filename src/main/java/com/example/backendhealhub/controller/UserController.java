@@ -1,15 +1,25 @@
 package com.example.backendhealhub.controller;
+import com.example.backendhealhub.config.CustomUserDetailsService;
+import com.example.backendhealhub.config.JWTGenerator;
+import com.example.backendhealhub.dto.AuthResponseDTO;
 import com.example.backendhealhub.dto.UserDTO;
 import com.example.backendhealhub.service.UserService;
+import com.example.backendhealhub.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -17,11 +27,23 @@ public class UserController {
 
     private final UserService userService;
 
+    private AuthenticationManager authenticationManager;
+
+    private JWTGenerator jwtGenerator;
+
+     Authentication authentication;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthenticationManager authenticationManager, JWTGenerator jwtGenerator) {
         this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtGenerator = jwtGenerator;
     }
+
+//    @Autowired
+//    public UserController(UserService userService) {
+//        this.userService = userService;
+//    }
 
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
@@ -59,10 +81,45 @@ public class UserController {
         return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
     }
 
+//    @PostMapping("/login")
+//    public ResponseEntity<UserDTO> loginUser(@RequestBody UserDTO userDTO) {
+//        UserDTO loggedInUser = userService.loginUser(userDTO.getEmail(), userDTO.getPassword());
+//        return ResponseEntity.ok(loggedInUser);
+//    }
+
+
+//    @PostMapping("/login")
+//    public ResponseEntity<UserDTO> loginUser(@RequestBody UserDTO userDTO) {
+//        UserDTO loggedInUser = userService.loginUser(userDTO.getEmail(), userDTO.getPassword());
+//        this.authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDTO.getUsername(),userDTO.getPassword())
+//        );
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        String token = jwtGenerator.generateToken(authentication);
+//        System.out.println(token);
+//        return ResponseEntity.ok(loggedInUser);
+//    }
+
     @PostMapping("/login")
-    public ResponseEntity<UserDTO> loginUser(@RequestBody UserDTO userDTO) {
-        UserDTO loggedInUser = userService.loginUser(userDTO.getEmail(), userDTO.getPassword());
-        return ResponseEntity.ok(loggedInUser);
+    public ResponseEntity<?> loginUser(@RequestBody UserDTO userDTO) {
+        // Authenticate the user
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        userDTO.getEmail(),
+                        userDTO.getPassword()
+                )
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // Generate JWT token
+        String token = jwtGenerator.generateToken(authentication);
+
+        // Create the response body with the token
+        AuthResponseDTO response = new AuthResponseDTO();
+        response.setAccessToken(token); // Correctly use setAccessToken here
+
+        // Return the response entity with the token in the body
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/profile")

@@ -39,6 +39,14 @@ public class User {
     @Getter @Setter
     private String username;
 
+    @Getter @Setter
+    @Column(nullable = false)
+    private String City;
+
+    @Getter @Setter
+    @Column (nullable = false)
+    private String region;
+
 
 
 }

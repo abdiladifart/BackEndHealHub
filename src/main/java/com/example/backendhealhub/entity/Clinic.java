@@ -21,9 +21,11 @@ public class Clinic {
     @Column(nullable = false)
     private String name;
 
-    @NotBlank
-    @Size(max = 255)
+    @Getter @Setter
     @Column(nullable = false)
-    private String address;
+    private String City;
 
+    @Getter @Setter
+    @Column (nullable = false)
+    private String region;
 }

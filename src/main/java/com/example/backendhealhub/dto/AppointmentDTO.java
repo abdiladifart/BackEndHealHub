@@ -1,5 +1,7 @@
-package com.example.backendhealhub.entity;
+package com.example.backendhealhub.dto;
 
+import com.example.backendhealhub.entity.Doctor;
+import com.example.backendhealhub.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,33 +10,28 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "appointments")
-public class Appointment {
+public class AppointmentDTO {
 
     @Getter @Setter
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Getter @Setter
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Getter @Setter
-    @ManyToOne
-    @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
     @Getter @Setter
-    @Future
-    @NotNull
-    @Column(nullable = false)
     private LocalDateTime appointmentTime;
 
     @Getter @Setter
-    @Column
     private String Statue;
 
+    public AppointmentDTO(Long id, User user, Doctor doctor, LocalDateTime appointmentTime, String statue) {
+        this.id = id;
+        this.user = user;
+        this.doctor = doctor;
+        this.appointmentTime = appointmentTime;
+        Statue = statue;
+    }
 }

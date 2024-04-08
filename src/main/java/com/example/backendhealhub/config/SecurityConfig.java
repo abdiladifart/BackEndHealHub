@@ -25,6 +25,8 @@ public class SecurityConfig {
         this.authEntryPoint = authEntryPoint;
     }
 
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http

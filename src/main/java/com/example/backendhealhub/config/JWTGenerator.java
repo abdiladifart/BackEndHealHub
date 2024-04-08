@@ -1,9 +1,11 @@
 package com.example.backendhealhub.config;
-import io.jsonwebtoken.security.Keys;
 
-import java.security.Key;
 import java.util.Date;
+
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import java.security.Key;
+//import java.security.KeyPair;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -13,13 +15,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JWTGenerator {
-//    private static final KeyPair keyPair = Keys.keyPairFor(SignatureAlgorithm.RS256);
+    //private static final KeyPair keyPair = Keys.keyPairFor(SignatureAlgorithm.RS256);
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    Date now = new Date();
 
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
         Date currentDate = new Date();
-        Date expireDate = new Date(currentDate.getTime() + SecurityConstants.JWT_EXPIRATION);
+        Date expireDate = new Date(now.getTime() + SecurityConstants.JWT_EXPIRATION);
 
         String token = Jwts.builder()
                 .setSubject(username)
@@ -32,7 +35,7 @@ public class JWTGenerator {
         return token;
     }
     public String getUsernameFromJWT(String token){
-        Claims claims = Jwts.parserBuilder()
+        Claims claims = Jwts.parser()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
@@ -42,7 +45,7 @@ public class JWTGenerator {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
+            Jwts.parser()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
