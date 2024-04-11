@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(),user.getCity(),user.getRegion(), null); // Password is not included for security
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(),user.getCity(),user.getCity(), user.getRegion()); // Password is not included for security
     }
 
     @Override

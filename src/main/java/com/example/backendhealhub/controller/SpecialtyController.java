@@ -23,6 +23,7 @@ public class SpecialtyController {
 
     @GetMapping
     public ResponseEntity<List<SpecialtyDTO>> getAllSpecialties() {
+        System.out.println("Fetching all specialties");  // This line will log in your console
         return ResponseEntity.ok(specialtyService.getAllSpecialties());
     }
 
