@@ -23,18 +23,19 @@ public class SpecialtyController {
 
     @GetMapping
     public ResponseEntity<List<SpecialtyDTO>> getAllSpecialties() {
-        System.out.println("Fetching all specialties");  // This line will log in your console
         return ResponseEntity.ok(specialtyService.getAllSpecialties());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<SpecialtyDTO> getSpecialtyById(@PathVariable Long id) {
-        return ResponseEntity.ok(specialtyService.getSpecialtyById(id));
+        SpecialtyDTO specialty = specialtyService.getSpecialtyById(id);
+        return ResponseEntity.ok(specialty);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<SpecialtyDTO> updateSpecialty(@PathVariable Long id, @RequestBody SpecialtyDTO specialtyDTO) {
-        return ResponseEntity.ok(specialtyService.updateSpecialty(id, specialtyDTO));
+        SpecialtyDTO updatedSpecialty = specialtyService.updateSpecialty(id, specialtyDTO);
+        return ResponseEntity.ok(updatedSpecialty);
     }
 
     @DeleteMapping("/{id}")

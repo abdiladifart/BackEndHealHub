@@ -29,4 +29,9 @@ public class Clinic {
     @Getter @Setter
     @Column (nullable = false)
     private String region;
+
+    @ManyToOne
+    @JoinColumn(name = "specialty_id") // Assuming a clinic offers one specialty for simplicity
+    @Getter @Setter
+    private Specialty specialty;
 }

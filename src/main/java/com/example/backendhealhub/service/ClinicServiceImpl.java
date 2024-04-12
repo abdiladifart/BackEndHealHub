@@ -38,6 +38,13 @@ public class ClinicServiceImpl implements ClinicService {
                 .collect(Collectors.toList());
     }
 
+    public List<ClinicDTO> getClinicsBySpecialtyAndLocation(Long specialtyId, String city, String region) {
+        List<Clinic> clinics = clinicRepository.findBySpecialtyIdAndCityAndRegion(specialtyId, city, region);
+        return clinics.stream()
+                .map(clinic -> modelMapper.map(clinic, ClinicDTO.class))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public ClinicDTO getClinicById(Long id) {
         Clinic clinic = clinicRepository.findById(id)

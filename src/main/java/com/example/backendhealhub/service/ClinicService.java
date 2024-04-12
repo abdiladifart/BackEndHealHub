@@ -9,4 +9,6 @@ public interface ClinicService {
     ClinicDTO getClinicById(Long id);
     ClinicDTO updateClinic(Long id, ClinicDTO clinicDTO);
     void deleteClinic(Long id);
+
+    List<ClinicDTO> getClinicsBySpecialtyAndLocation(Long specialtyId, String city, String region);
 }

@@ -1,6 +1,9 @@
 package com.example.backendhealhub.service;
+import com.example.backendhealhub.dto.ClinicDTO;
 import com.example.backendhealhub.dto.SpecialtyDTO;
+import com.example.backendhealhub.entity.Clinic;
 import com.example.backendhealhub.entity.Specialty;
+import com.example.backendhealhub.repository.ClinicRepository;
 import com.example.backendhealhub.repository.SpecialtyRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,10 @@ public class SpecialtyServiceImpl implements SpecialtyService {
 
     @Autowired
     private SpecialtyRepository specialtyRepository;
+
+    @Autowired
+    private ClinicRepository clinicRepository;
+
 
     @Autowired
     private ModelMapper modelMapper;
@@ -49,5 +56,10 @@ public class SpecialtyServiceImpl implements SpecialtyService {
     @Override
     public void deleteSpecialty(Long id) {
         specialtyRepository.deleteById(id);
+    }
+
+    public List<ClinicDTO> getClinicsBySpecialtyAndLocation(Long specialtyId, String city, String region) {
+        List<Clinic> clinics = clinicRepository.findBySpecialtyIdAndCityAndRegion(specialtyId, city, region);
+        return clinics.stream().map(clinic -> modelMapper.map(clinic, ClinicDTO.class)).collect(Collectors.toList());
     }
 }

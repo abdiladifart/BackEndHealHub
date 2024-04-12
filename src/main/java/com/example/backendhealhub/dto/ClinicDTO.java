@@ -16,6 +16,8 @@ public class ClinicDTO {
     private String region;
 
 
+
+
     public ClinicDTO(Long id, String name, String city,String region) {
         this.id = id;
         this.name = name;

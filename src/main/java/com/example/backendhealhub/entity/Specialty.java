@@ -28,7 +28,14 @@ public class Specialty {
     @Getter @Setter
     private Set<Doctor> doctors;
 
-
+    @ManyToMany
+    @JoinTable(
+            name = "clinic_specialty",
+            joinColumns = @JoinColumn(name = "specialty_id"),
+            inverseJoinColumns = @JoinColumn(name = "clinic_id")
+    )
+    @Getter @Setter
+    private Set<Clinic> clinics;
 
 }
 
