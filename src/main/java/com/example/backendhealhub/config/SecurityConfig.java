@@ -39,7 +39,8 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/specialties/**").permitAll()
-                .antMatchers("/clinics/search/**").permitAll()  // Allow public access to search clinics
+                .antMatchers("/clinics/search/**").permitAll()// Allow public access to search clinics
+                .antMatchers("/doctors/**").permitAll() // Allow public access to fetch doctors
                 .antMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

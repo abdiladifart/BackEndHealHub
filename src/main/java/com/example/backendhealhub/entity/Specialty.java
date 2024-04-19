@@ -2,6 +2,8 @@ package com.example.backendhealhub.entity;
 
 
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,6 +27,7 @@ public class Specialty {
     private String name;
 
     @OneToMany(mappedBy = "specialty")
+    @JsonBackReference
     @Getter @Setter
     private Set<Doctor> doctors;
 

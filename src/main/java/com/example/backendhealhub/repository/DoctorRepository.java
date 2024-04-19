@@ -3,8 +3,9 @@ import com.example.backendhealhub.entity.Doctor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
-    // Custom queries can be added here if needed, for example:
-    // Optional<Doctor> findByUserId(Long userId);
+    List<Doctor> findByClinicId(Long clinicId);
 }

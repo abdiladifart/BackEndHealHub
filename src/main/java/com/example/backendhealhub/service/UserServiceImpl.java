@@ -150,6 +150,7 @@ public class UserServiceImpl implements UserService {
 
         user = userRepository.save(user);
 
+
         // If the user is a doctor, handle doctor-specific logic here
         if ("doctor".equalsIgnoreCase(userDTO.getRole())) {
             Doctor doctor = new Doctor();

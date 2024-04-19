@@ -19,16 +19,23 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     private ModelMapper modelMapper = new ModelMapper();
 
+//    @Override
+//    public AppointmentDTO saveAppointment(AppointmentDTO appointmentDTO) {
+//        // Conversion from DTO to entity
+//        Appointment appointment = modelMapper.map(appointmentDTO, Appointment.class);
+//        // Saving the entity
+//        Appointment savedAppointment = appointmentRepository.save(appointment);
+//        // Conversion back to DTO
+//        return modelMapper.map(savedAppointment, AppointmentDTO.class);
+//    }
+
     @Override
     public AppointmentDTO saveAppointment(AppointmentDTO appointmentDTO) {
-        // Conversion from DTO to entity
         Appointment appointment = modelMapper.map(appointmentDTO, Appointment.class);
-        // Saving the entity
+        appointment.setClinic(appointmentDTO.getClinic()); // Set clinic explicitly
         Appointment savedAppointment = appointmentRepository.save(appointment);
-        // Conversion back to DTO
         return modelMapper.map(savedAppointment, AppointmentDTO.class);
     }
-
     @Override
     public List<AppointmentDTO> findAllAppointments() {
         return appointmentRepository.findAll().stream()
@@ -51,6 +58,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             existingAppointment.setUser(modelMapper.map(appointmentDTO.getUser(), User.class));
             existingAppointment.setAppointmentTime(appointmentDTO.getAppointmentTime());
             existingAppointment.setStatue(appointmentDTO.getStatue());
+            existingAppointment.setClinic(appointmentDTO.getClinic()); // Update clinic explicitly
             Appointment updatedAppointment = appointmentRepository.save(existingAppointment);
             return modelMapper.map(updatedAppointment, AppointmentDTO.class);
         }).orElse(null); // Handle case where appointment doesn't exist

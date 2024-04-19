@@ -37,4 +37,9 @@ public class Appointment {
     @Column
     private String Statue;
 
+    @Getter @Setter
+    @ManyToOne
+    @JoinColumn(name = "clinic_id", nullable = false)
+    private Clinic clinic;
+
 }

@@ -1,5 +1,6 @@
 package com.example.backendhealhub.dto;
 
+import com.example.backendhealhub.entity.Clinic;
 import com.example.backendhealhub.entity.Doctor;
 import com.example.backendhealhub.entity.User;
 import lombok.Getter;
@@ -27,11 +28,24 @@ public class AppointmentDTO {
     @Getter @Setter
     private String Statue;
 
-    public AppointmentDTO(Long id, User user, Doctor doctor, LocalDateTime appointmentTime, String statue) {
+    @Getter @Setter
+    private Clinic clinic;
+
+
+//    public AppointmentDTO(Long id, User user, Doctor doctor, LocalDateTime appointmentTime, String statue) {
+//        this.id = id;
+//        this.user = user;
+//        this.doctor = doctor;
+//        this.appointmentTime = appointmentTime;
+//        Statue = statue;
+//    }
+
+    public AppointmentDTO(Long id, User user, Doctor doctor, LocalDateTime appointmentTime, String statue, Clinic clinic) {
         this.id = id;
         this.user = user;
         this.doctor = doctor;
         this.appointmentTime = appointmentTime;
-        Statue = statue;
+        this.Statue = statue;
+        this.clinic = clinic;
     }
 }
