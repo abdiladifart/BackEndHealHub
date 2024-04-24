@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -114,13 +115,20 @@ public class UserController {
         // Generate JWT token
         String token = jwtGenerator.generateToken(authentication);
 
-        // Create the response body with the token
-        AuthResponseDTO response = new AuthResponseDTO();
-        response.setAccessToken(token); // Correctly use setAccessToken here
+        // Retrieve the authenticated user's details
+        UserDTO authenticatedUser = userService.getUserByEmail(userDTO.getEmail());
 
-        // Return the response entity with the token in the body
-        return ResponseEntity.ok(response);
+        // Create the response body with the token and user ID
+        Map<String, Object> response = new HashMap<>();
+        response.put("accessToken", token);
+        response.put("userId", authenticatedUser.getId());
+
+        // Return the response entity with the token and user ID in the body
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(response, headers, HttpStatus.OK);
     }
+
 
     @GetMapping("/profile")
     public ResponseEntity<?> getUserProfile() {

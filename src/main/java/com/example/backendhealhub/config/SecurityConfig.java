@@ -25,7 +25,6 @@ public class SecurityConfig {
         this.authEntryPoint = authEntryPoint;
     }
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -39,6 +38,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/specialties/**").permitAll()
+                .antMatchers("/appointments/**").permitAll()
                 .antMatchers("/clinics/search/**").permitAll()// Allow public access to search clinics
                 .antMatchers("/doctors/**").permitAll() // Allow public access to fetch doctors
                 .antMatchers("/api/auth/**").permitAll()

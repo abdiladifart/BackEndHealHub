@@ -1,51 +1,43 @@
 package com.example.backendhealhub.dto;
 
-import com.example.backendhealhub.entity.Clinic;
-import com.example.backendhealhub.entity.Doctor;
-import com.example.backendhealhub.entity.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public class AppointmentDTO {
-
-    @Getter @Setter
+    @Getter
+    @Setter
     private Long id;
-
     @Getter @Setter
-    private User user;
-
+    private Long userId;
     @Getter @Setter
-    private Doctor doctor;
-
+    private Long doctorId;
     @Getter @Setter
-    private LocalDateTime appointmentTime;
-
+    private Long clinicId;
     @Getter @Setter
-    private String Statue;
-
+    private Long specialtyId;
     @Getter @Setter
-    private Clinic clinic;
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime dateTime;
+    @Getter @Setter
+    private String clinicName;
+    @Getter @Setter
+    private String doctorName;
+    @Getter @Setter
+    private String date;
+    @Getter @Setter
+    private String time;
+    @Getter @Setter
+    private String location;
 
-
-//    public AppointmentDTO(Long id, User user, Doctor doctor, LocalDateTime appointmentTime, String statue) {
-//        this.id = id;
-//        this.user = user;
-//        this.doctor = doctor;
-//        this.appointmentTime = appointmentTime;
-//        Statue = statue;
-//    }
-
-    public AppointmentDTO(Long id, User user, Doctor doctor, LocalDateTime appointmentTime, String statue, Clinic clinic) {
+    public AppointmentDTO(Long id, Long userId, Long doctorId, Long clinicId, Long specialtyId, LocalDateTime dateTime) {
         this.id = id;
-        this.user = user;
-        this.doctor = doctor;
-        this.appointmentTime = appointmentTime;
-        this.Statue = statue;
-        this.clinic = clinic;
+        this.userId = userId;
+        this.doctorId = doctorId;
+        this.clinicId = clinicId;
+        this.specialtyId = specialtyId;
+        this.dateTime = dateTime;
     }
 }

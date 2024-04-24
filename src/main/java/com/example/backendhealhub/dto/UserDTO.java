@@ -3,6 +3,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class UserDTO {
+
+    @Getter @Setter
     private Long id;
 
     @Getter @Setter

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 public class JWTGenerator {
     //private static final KeyPair keyPair = Keys.keyPairFor(SignatureAlgorithm.RS256);
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+
     Date now = new Date();
 
     public String generateToken(Authentication authentication) {
@@ -26,9 +27,9 @@ public class JWTGenerator {
 
         String token = Jwts.builder()
                 .setSubject(username)
-                .setIssuedAt( new Date())
+                .setIssuedAt(new Date())
                 .setExpiration(expireDate)
-                .signWith(key,SignatureAlgorithm.HS512)
+                .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
         System.out.println("New token :");
         System.out.println(token);

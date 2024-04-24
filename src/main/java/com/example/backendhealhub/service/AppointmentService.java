@@ -5,11 +5,7 @@ import com.example.backendhealhub.dto.AppointmentDTO;
 import java.util.List;
 
 public interface AppointmentService {
-
-
-    AppointmentDTO saveAppointment(AppointmentDTO appointmentDTO);
-    List<AppointmentDTO> findAllAppointments();
-    AppointmentDTO findAppointmentById(Long id);
-    AppointmentDTO updateAppointment(Long id, AppointmentDTO appointmentDTO);
-    void deleteAppointment(Long id);
+    AppointmentDTO bookAppointment(AppointmentDTO appointmentDTO);
+    List<AppointmentDTO> getAppointmentsByUserId(Long userId);
+    void cancelAppointment(Long appointmentId);
 }

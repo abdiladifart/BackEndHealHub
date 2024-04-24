@@ -7,12 +7,11 @@ import com.example.backendhealhub.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.util.Set;
 
 public class DoctorDTO {
+
+    @Getter @Setter
 
     private Long id;
 
@@ -31,6 +30,7 @@ public class DoctorDTO {
 
     @Getter @Setter
     private Clinic clinic;
+
 
 
 }
