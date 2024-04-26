@@ -1,12 +1,15 @@
 package com.example.backendhealhub.service;
 import com.example.backendhealhub.config.JWTGenerator;
 import com.example.backendhealhub.dto.UserDTO;
+import com.example.backendhealhub.entity.Clinic;
 import com.example.backendhealhub.entity.Doctor;
 import com.example.backendhealhub.entity.Specialty;
 import com.example.backendhealhub.entity.User;
+import com.example.backendhealhub.repository.ClinicRepository;
 import com.example.backendhealhub.repository.DoctorRepository;
 import com.example.backendhealhub.repository.SpecialtyRepository;
 import com.example.backendhealhub.repository.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,6 +34,13 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private DoctorRepository doctorRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @Autowired
+    private ClinicRepository clinicRepository;
+
     private AuthenticationManager authenticationManager;
 
     //    private RoleRepository roleRepository;
@@ -65,17 +75,48 @@ public class UserServiceImpl implements UserService {
 
     }
 
+//    @Override
+//    @Transactional
+//    public UserDTO updateUser(Long id, UserDTO userDTO) {
+//        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+//        user.setEmail(userDTO.getEmail());
+//        user.setUsername(userDTO.getUsername());
+//        user = userRepository.save(user);
+//        return new  UserDTO(user.getId(), user.getEmail(),
+//                user.getUsername(), userDTO.getPassword(),
+//                user.getCity(),user.getRegion());
+//    }
+
     @Override
     @Transactional
-    public UserDTO updateUser(Long id, UserDTO userDTO) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        user.setEmail(userDTO.getEmail());
-        user.setUsername(userDTO.getUsername());
-        user = userRepository.save(user);
-        return new  UserDTO(user.getId(), user.getEmail(),
-                user.getUsername(), userDTO.getPassword(),
-                user.getCity(),user.getRegion());
+    public UserDTO updateUser(Long userId, UserDTO userDTO) {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        existingUser.setEmail(userDTO.getEmail());
+        existingUser.setUsername(userDTO.getUsername());
+        existingUser.setCity(userDTO.getCity());
+        existingUser.setRegion(userDTO.getRegion());
+        existingUser.setType(userDTO.getRole());  // Assuming setType sets the user role
+
+        if ("doctor".equalsIgnoreCase(userDTO.getRole()) && !doctorExistsForUser(existingUser)) {
+            Doctor doctor = new Doctor();
+            doctor.setName(existingUser.getUsername());
+            doctor.setUser(existingUser);
+            Specialty specialty = specialtyRepository.findById(userDTO.getSpecialtyId())
+                    .orElseThrow(() -> new RuntimeException("Specialty not found"));
+            doctor.setSpecialty(specialty);
+            doctorRepository.save(doctor);
+        }
+
+        userRepository.save(existingUser);
+        return modelMapper.map(existingUser, UserDTO.class);
     }
+
+    private boolean doctorExistsForUser(User user) {
+        return doctorRepository.existsByUserId(user.getId());
+    }
+
 
     @Override
     public void deleteUser(Long id) {
@@ -145,26 +186,27 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setCity(userDTO.getCity());
         user.setRegion(userDTO.getRegion());
-        // Handle the new role attribute
         user.setType(userDTO.getRole());
 
         user = userRepository.save(user);
 
-
-        // If the user is a doctor, handle doctor-specific logic here
         if ("doctor".equalsIgnoreCase(userDTO.getRole())) {
             Doctor doctor = new Doctor();
-            doctor.setName(user.getUsername()); // Assuming the doctor's name is the same as the username
+            doctor.setName(user.getUsername());
             Specialty specialty = specialtyRepository.findById(userDTO.getSpecialtyId())
                     .orElseThrow(() -> new RuntimeException("Specialty not found"));
             doctor.setSpecialty(specialty);
-            // Assuming there's a relationship or attribute in Doctor to link to User
-            doctor.setUser(user); // This assumes a setUser method in Doctor to link the Doctor to the User
-            doctorRepository.save(doctor); // Save the doctor entity
+
+            Clinic clinic = clinicRepository.findById(userDTO.getClinicId())
+                    .orElseThrow(() -> new RuntimeException("Clinic not found"));
+            doctor.setClinic(clinic);
+
+            doctor.setUser(user);
+            doctorRepository.save(doctor);
         }
 
         return new UserDTO(user.getId(), user.getEmail(), user.getUsername(),
-                userDTO.getPassword(), user.getCity(), user.getRegion(), userDTO.getRole(),userDTO.getSpecialtyId());
+                userDTO.getPassword(), user.getCity(), user.getRegion(), userDTO.getRole(), userDTO.getSpecialtyId());
     }
 
 

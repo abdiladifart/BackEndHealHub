@@ -2,7 +2,9 @@ package com.example.backendhealhub.service;
 
 import com.example.backendhealhub.dto.DoctorDTO;
 import com.example.backendhealhub.entity.Doctor;
+import com.example.backendhealhub.entity.User;
 import com.example.backendhealhub.repository.DoctorRepository;
+import com.example.backendhealhub.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,9 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Autowired
     private DoctorRepository doctorRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -36,11 +41,22 @@ public class DoctorServiceImpl implements DoctorService {
                 .collect(Collectors.toList());
     }
 
+//    public DoctorDTO create(DoctorDTO doctorDTO) {
+//        Doctor doctor = modelMapper.map(doctorDTO, Doctor.class);
+//        doctor = doctorRepository.save(doctor);
+//        return modelMapper.map(doctor, DoctorDTO.class);
+//    }
+
     public DoctorDTO create(DoctorDTO doctorDTO) {
+        User user = userRepository.findById(doctorDTO.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         Doctor doctor = modelMapper.map(doctorDTO, Doctor.class);
+        doctor.setName(user.getUsername()); // Set doctor's name from user's username
         doctor = doctorRepository.save(doctor);
         return modelMapper.map(doctor, DoctorDTO.class);
     }
+
 
     @Override
     public DoctorDTO findById(Long id) {
