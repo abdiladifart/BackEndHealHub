@@ -3,6 +3,9 @@ import com.example.backendhealhub.config.CustomUserDetailsService;
 import com.example.backendhealhub.config.JWTGenerator;
 import com.example.backendhealhub.dto.AuthResponseDTO;
 import com.example.backendhealhub.dto.UserDTO;
+import com.example.backendhealhub.entity.User;
+import com.example.backendhealhub.repository.UserRepository;
+import com.example.backendhealhub.service.ImageStorageService;
 import com.example.backendhealhub.service.UserService;
 import com.example.backendhealhub.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +17,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +32,13 @@ public class UserController {
 
     private final UserService userService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private ImageStorageService imageStorageService;
 
     private JWTGenerator jwtGenerator;
 
@@ -142,6 +152,18 @@ public class UserController {
         UserDTO userDTO = userService.getUserByEmail(email);
         return ResponseEntity.ok(userDTO);
     }
+
+    @PostMapping("/upload-profile-image")
+    public ResponseEntity<UserDTO> uploadProfileImage(@RequestParam("image") MultipartFile file, Authentication authentication) {
+        // Assuming the username is the email, fetch the user ID from the database
+        User user = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        UserDTO userDTO = userService.uploadUserImage(user.getId(), file);
+        return ResponseEntity.ok(userDTO);
+    }
+
+
 
 
 

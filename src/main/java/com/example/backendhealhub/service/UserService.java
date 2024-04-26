@@ -1,6 +1,7 @@
 package com.example.backendhealhub.service;
 
 import com.example.backendhealhub.dto.UserDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,4 +18,8 @@ public interface UserService {
     UserDTO getUserByEmail(String email);
 
     UserDTO getUserByName(String name);
+
+    UserDTO uploadUserImage(Long userId, MultipartFile file);
+
+
 }

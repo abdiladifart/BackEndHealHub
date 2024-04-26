@@ -51,4 +51,8 @@ public class User {
     @Column (nullable = false)
     private String type;
 
+    @Getter @Setter
+    @Column (nullable = true)
+    private String imageUrl;
+
 }

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -41,12 +42,16 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ClinicRepository clinicRepository;
 
+    @Autowired
+    private ImageStorageService imageStorageService;
+
     private AuthenticationManager authenticationManager;
+
 
     //    private RoleRepository roleRepository;
     private JWTGenerator jwtGenerator;
 
-//    @Autowired
+    //    @Autowired
 //    public UserServiceImpl(UserRepository userRepository) {
 //        this.userRepository = userRepository;
 //    }
@@ -69,7 +74,7 @@ public class UserServiceImpl implements UserService {
         user = userRepository.save(user);
         return new UserDTO(user.getId(), user.getEmail(),
                 user.getUsername(), userDTO.getPassword(),
-                user.getCity(),user.getRegion()
+                user.getCity(), user.getRegion()
 
         );
 
@@ -126,8 +131,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO getUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        return new UserDTO(user.getId(), user.getEmail(), user.getUsername() ,
-                       user.getPassword(), user.getCity(),user.getRegion()
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(),
+                user.getPassword(), user.getCity(), user.getRegion()
         );
     }
 
@@ -136,20 +141,21 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(),user.getCity(),user.getCity(), user.getRegion()); // Password is not included for security
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), user.getCity(), user.getRegion(), user.getType(), user.getImageUrl());
     }
 
     @Override
     public UserDTO getUserByName(String name) {
         User user = userRepository.findByEmail(name)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(),user.getCity(),user.getRegion() ,null);
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), user.getCity(), user.getRegion(), null);
 
     }
 
+
     @Override
     public List<UserDTO> getAllUsers() {
-        return userRepository.findAll().stream().map(user -> new UserDTO(user.getId(), user.getEmail(), user.getUsername() ,user.getCity(),user.getRegion(), user.getPassword())).collect(Collectors.toList());
+        return userRepository.findAll().stream().map(user -> new UserDTO(user.getId(), user.getEmail(), user.getUsername(), user.getCity(), user.getRegion(), user.getPassword())).collect(Collectors.toList());
     }
 
 //    @Override
@@ -221,8 +227,7 @@ public class UserServiceImpl implements UserService {
         }
 
 
-
-        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), user.getCity(),user.getRegion(),null); // Avoid returning the password
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), user.getCity(), user.getRegion(), null); // Avoid returning the password
     }
 
 
@@ -237,4 +242,21 @@ public class UserServiceImpl implements UserService {
 //        return new ResponseEntity<>(new AuthResponseDTO(token), HttpStatus.OK);
 //    }
 
+//    @Transactional
+//    public void uploadUserImage(Long userId, MultipartFile file) {
+//        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+//        String imageUrl = imageStorageService.upload(file); // A service that handles the upload to a storage solution
+//        user.setImageUrl(imageUrl);
+//        userRepository.save(user);
+//    }
+
+    @Override
+    public UserDTO uploadUserImage(Long userId, MultipartFile file) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        String imageUrl = imageStorageService.upload(file); // Store the image and get back the URL
+        user.setImageUrl(imageUrl);
+        userRepository.save(user);
+        return modelMapper.map(user, UserDTO.class); // Assuming you have a model mapper
+    }
 }
+
