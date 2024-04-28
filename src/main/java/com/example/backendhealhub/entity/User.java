@@ -55,4 +55,10 @@ public class User {
     @Column (nullable = true)
     private String imageUrl;
 
+    @NotBlank
+    @Size(min = 10, max = 15)
+    @Column(nullable = false)
+    @Getter @Setter
+    private String phoneNumber;
+
 }

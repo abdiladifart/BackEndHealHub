@@ -45,6 +45,9 @@ public class Appointment {
     @Column(name = "date_time")
     private LocalDateTime dateTime;
 
+
+
+
     // Constructors, getters, and setters
 }
 

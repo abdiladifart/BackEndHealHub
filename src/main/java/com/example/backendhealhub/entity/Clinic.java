@@ -37,4 +37,12 @@ public class Clinic {
     @Getter @Setter
     private Specialty specialty;
 
+    @JoinColumn(name = "latitude")
+    @Getter @Setter
+    private double latitude;
+
+    @JoinColumn(name = "longitude")
+    @Getter @Setter
+    private double longitude;
+
 }

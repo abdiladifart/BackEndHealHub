@@ -33,6 +33,13 @@ public class AppointmentController {
         return ResponseEntity.ok(appointments);
     }
 
+//    @GetMapping("/doctor/{doctorId}")
+//    public ResponseEntity<List<AppointmentDTO>> getAppointmentsByDoctorId(@PathVariable Long doctorId) {
+//        List<AppointmentDTO> appointments = appointmentService.getAppointmentsByDoctorId(doctorId);
+//        return ResponseEntity.ok(appointments);
+//    }
+
+
 
     @DeleteMapping("/cancel/{id}")
     public ResponseEntity<?> cancelAppointment(@PathVariable Long id) {

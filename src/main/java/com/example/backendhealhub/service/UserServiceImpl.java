@@ -141,7 +141,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), user.getCity(), user.getRegion(), user.getType(), user.getImageUrl());
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), user.getCity(), user.getRegion(), user.getType(), user.getImageUrl(),user.getPhoneNumber());
     }
 
     @Override
@@ -193,6 +193,8 @@ public class UserServiceImpl implements UserService {
         user.setCity(userDTO.getCity());
         user.setRegion(userDTO.getRegion());
         user.setType(userDTO.getRole());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+
 
         user = userRepository.save(user);
 

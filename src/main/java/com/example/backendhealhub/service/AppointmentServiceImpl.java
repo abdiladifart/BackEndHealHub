@@ -3,6 +3,7 @@ package com.example.backendhealhub.service;
 // AppointmentServiceImpl.java
 import com.example.backendhealhub.dto.AppointmentDTO;
 import com.example.backendhealhub.entity.Appointment;
+import com.example.backendhealhub.entity.User;
 import com.example.backendhealhub.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +88,40 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .collect(Collectors.toList());
     }
 
+//    public List<AppointmentDTO> getAppointmentsByDoctorId(Long doctorId) {
+//        return appointmentRepository.findAll().stream()
+//                .filter(a -> a.getDoctor().getId().equals(doctorId))
+//                .map(a -> {
+//                    User patient = a.getUser();
+//                    // Make sure 'patient' is not null
+//                    if (patient == null) {
+//                        logger.error("Appointment ID " + a.getId() + " has no associated user.");
+//                        return null; // or handle this case as you see fit
+//                    }
+//                    String patientName = patient.getUsername(); // This assumes getUsername() gives the patient's name
+//                    AppointmentDTO dto = new AppointmentDTO(
+//                            a.getId(),
+//                            patient.getId(),
+//                            a.getDoctor().getId(),
+//                            a.getClinic().getId(),
+//                            a.getSpecialty().getId(),
+//                            a.getDateTime()
+//                    );
+//                    dto.setClinicName(a.getClinic().getName());
+//                    dto.setDoctorName(a.getDoctor().getName());
+//                    dto.setPatientName(patientName);
+//                    dto.setDate(a.getDateTime().toLocalDate().toString());
+//                    dto.setTime(a.getDateTime().toLocalTime().toString());
+//                    dto.setLocation(a.getClinic().getCity());
+//                    return dto;
+//                })
+//                .collect(Collectors.toList());
+//    }
+
+
+
+
+
     public boolean isAppointmentAvailable(Long doctorId, LocalDateTime dateTime) {
         // You need to check if there's any appointment with the same doctorId and dateTime
         return appointmentRepository.findByDoctorIdAndDateTime(doctorId, dateTime).isEmpty();
@@ -97,4 +132,6 @@ public class AppointmentServiceImpl implements AppointmentService {
     public void cancelAppointment(Long appointmentId) {
         appointmentRepository.deleteById(appointmentId);
     }
+
+
 }
