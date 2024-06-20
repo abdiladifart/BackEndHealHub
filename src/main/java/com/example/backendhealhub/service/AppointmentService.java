@@ -9,5 +9,6 @@ public interface AppointmentService {
     List<AppointmentDTO> getAppointmentsByUserId(Long userId);
     void cancelAppointment(Long appointmentId);
 
-//    List<AppointmentDTO> getAppointmentsByDoctorId(Long doctorId);
+    List<AppointmentDTO> findAll();
+
 }

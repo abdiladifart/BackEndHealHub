@@ -1,5 +1,6 @@
 package com.example.backendhealhub.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,11 +33,6 @@ public class Clinic {
     @Column (nullable = false)
     private String region;
 
-    @ManyToOne
-    @JoinColumn(name = "specialty_id") // Assuming a clinic offers one specialty for simplicity
-    @Getter @Setter
-    private Specialty specialty;
-
     @JoinColumn(name = "latitude")
     @Getter @Setter
     private double latitude;
@@ -44,5 +40,11 @@ public class Clinic {
     @JoinColumn(name = "longitude")
     @Getter @Setter
     private double longitude;
+
+
+    @ManyToMany(mappedBy = "clinics")
+    @Getter @Setter
+    @JsonBackReference
+    private Set<Specialty> specialties;
 
 }

@@ -1,17 +1,19 @@
 package com.example.backendhealhub.config;
 
-import java.util.Date;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import java.security.Key;
-//import java.security.KeyPair;
+import com.example.backendhealhub.entity.User;
+import com.example.backendhealhub.repository.UserRepository;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+
+import java.security.Key;
+import java.util.Date;
 
 @Component
 public class JWTGenerator {
@@ -20,18 +22,32 @@ public class JWTGenerator {
 
     Date now = new Date();
 
+    @Autowired
+    private UserRepository userRepository;
+
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
+
+        // Fetch user from the database to get the latest role
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
+        String userRole = user.getType();
+        Long userId = user.getId();
+
         Date currentDate = new Date();
         Date expireDate = new Date(now.getTime() + SecurityConstants.JWT_EXPIRATION);
 
         String token = Jwts.builder()
                 .setSubject(username)
-                .setIssuedAt(new Date())
+                .claim("role", userRole) // Set role from database
+                .claim("userId", userId)
+                .setIssuedAt(currentDate)
                 .setExpiration(expireDate)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
         System.out.println("New token :");
+        System.out.println(username+ " role "+ userRole);
+
         System.out.println(token);
         return token;
     }

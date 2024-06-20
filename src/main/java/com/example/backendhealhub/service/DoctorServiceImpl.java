@@ -41,19 +41,19 @@ public class DoctorServiceImpl implements DoctorService {
                 .collect(Collectors.toList());
     }
 
-//    public DoctorDTO create(DoctorDTO doctorDTO) {
-//        Doctor doctor = modelMapper.map(doctorDTO, Doctor.class);
-//        doctor = doctorRepository.save(doctor);
-//        return modelMapper.map(doctor, DoctorDTO.class);
-//    }
 
     public DoctorDTO create(DoctorDTO doctorDTO) {
+        if (doctorDTO.getUser() == null || doctorDTO.getUser().getId() == null) {
+            throw new IllegalArgumentException("User ID is required");
+        }
+
         User user = userRepository.findById(doctorDTO.getUser().getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + doctorDTO.getUser().getId()));
 
         Doctor doctor = modelMapper.map(doctorDTO, Doctor.class);
-        doctor.setName(user.getUsername()); // Set doctor's name from user's username
+        doctor.setUser(user);  // Set the user directly obtained from the repository
         doctor = doctorRepository.save(doctor);
+
         return modelMapper.map(doctor, DoctorDTO.class);
     }
 
@@ -61,7 +61,7 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     public DoctorDTO findById(Long id) {
         Doctor doctor = doctorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Doctor not found")); // Custom exception recommended
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
         return modelMapper.map(doctor, DoctorDTO.class);
     }
 
@@ -69,12 +69,9 @@ public class DoctorServiceImpl implements DoctorService {
     @Transactional
     public DoctorDTO update(Long id, DoctorDTO doctorDTO) {
         Doctor doctor = doctorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Doctor not found")); // Custom exception recommended
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
-        // Update the doctor's properties
         doctor.setName(doctorDTO.getName());
-        // You can update other properties similarly, assuming they are provided in DoctorDTO
-        // If any other related entities need to be fetched/updated, include that logic here
 
         Doctor updatedDoctor = doctorRepository.save(doctor);
         return modelMapper.map(updatedDoctor, DoctorDTO.class);
@@ -83,7 +80,7 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     public void delete(Long id) {
         if (!doctorRepository.existsById(id)) {
-            throw new RuntimeException("Doctor not found"); // Custom exception recommended
+            throw new RuntimeException("Doctor not found");
         }
         doctorRepository.deleteById(id);
     }

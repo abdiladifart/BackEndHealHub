@@ -1,8 +1,6 @@
 package com.example.backendhealhub.entity;
-import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,21 +29,14 @@ public class Doctor {
     @Getter @Setter
     private Specialty specialty;
 
-    @OneToMany(mappedBy = "doctor")
-    @JsonManagedReference
-    @Getter @Setter
-    private Set<Appointment> appointments;
-
     @OneToOne
     @JoinColumn(name = "user_id", unique = true, nullable = false)
     @Getter @Setter
-    private User user; // Link to the User entity
-
+    private User user;
 
     @ManyToOne
-    @JoinColumn(name = "clinic_id", nullable = false) // Assuming each doctor works at one clinic
+    @JoinColumn(name = "clinic_id", nullable = false)
     @Getter @Setter
     private Clinic clinic;
-
-
 }
+

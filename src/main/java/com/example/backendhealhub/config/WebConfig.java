@@ -15,19 +15,21 @@ public class WebConfig implements WebMvcConfigurer {
         return new ModelMapper();
     }
 
-
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        // Update allowedOrigins to your frontend URL
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000")
+                .allowedOrigins("http://localhost:3000") // Replace with your frontend URL
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true);
+                .allowCredentials(true); // Allow credentials such as cookies, authorization headers, etc.
     }
+
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Map the URL path "/images/**" to the physical directory path "file:///path_to_user-storage/"
-        registry.addResourceHandler("/images/**").addResourceLocations("file:///C:/Users/Admin/Documents/sem6/TB/healhub/BackEndHealHubV2/user-storage/");
+        registry.addResourceHandler("/images/**").addResourceLocations("file:///C:/Users/Admin/Desktop/BackEndHealHub19/user-storage/");
+
     }
 }

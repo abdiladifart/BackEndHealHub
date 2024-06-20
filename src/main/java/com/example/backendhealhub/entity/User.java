@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -22,10 +23,8 @@ public class User {
     @NotBlank
     @Size(max = 100)
     @Column(nullable = false, unique = true)
-    @Getter
-    @Setter
+    @Getter @Setter
     private String email;
-
 
     @NotBlank
     @Size(min = 8, max = 100)
@@ -41,24 +40,28 @@ public class User {
 
     @Getter @Setter
     @Column(nullable = false)
-    private String City;
+    private String city;
 
     @Getter @Setter
-    @Column (nullable = false)
+    @Column(nullable = false)
     private String region;
 
     @Getter @Setter
-    @Column (nullable = false)
+    @Column(nullable = false)
     private String type;
 
     @Getter @Setter
-    @Column (nullable = true)
+    @Column(nullable = true)
     private String imageUrl;
 
-    @NotBlank
     @Size(min = 10, max = 15)
-    @Column(nullable = false)
+    @Column(nullable = true)  // Make phoneNumber nullable
     @Getter @Setter
     private String phoneNumber;
+
+    @Column(nullable = false)
+    @Min(18) // Ensures the age is at least 18
+    @Getter @Setter
+    private Integer age;
 
 }

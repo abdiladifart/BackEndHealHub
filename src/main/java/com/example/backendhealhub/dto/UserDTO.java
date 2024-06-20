@@ -38,6 +38,10 @@ public class UserDTO {
     @Getter @Setter
     private String phoneNumber;
 
+    @Getter @Setter
+    private Integer age;
+
+
     // Constructors
     public UserDTO() {}
 
@@ -95,25 +99,25 @@ public class UserDTO {
         this.imageUrl = imageUrl;
     }
 
-    public UserDTO(Long id, String email, String username, String password, String city,
-                   String region, String role, Long specialtyId, Long clinicId, String imageUrl, String phoneNumber) {
-        this.id = id;
-        this.email = email;
-        this.username = username;
-        this.password = password;
-        this.city = city;
-        this.region = region;
-        this.role = role;
-        this.specialtyId = specialtyId;
-        this.clinicId = clinicId;
-        this.imageUrl = imageUrl;
-        this.phoneNumber = phoneNumber;
-    }
+//    public UserDTO(Long id, String email, String username, String password, String city,
+//                   String region, String role, Long specialtyId, Long clinicId, String imageUrl, String phoneNumber) {
+//        this.id = id;
+//        this.email = email;
+//        this.username = username;
+//        this.password = password;
+//        this.city = city;
+//        this.region = region;
+//        this.role = role;
+//        this.specialtyId = specialtyId;
+//        this.clinicId = clinicId;
+//        this.imageUrl = imageUrl;
+//        this.phoneNumber = phoneNumber;
+//    }
 
     public UserDTO(User user) {
     }
 
-    public UserDTO(Long id, String email, String username, String city, String region, String role, String imageUrl, String phoneNumber) {
+    public UserDTO(Long id, String email, String username, String city, String region, String role, String imageUrl, String phoneNumber,Integer age) {
         this.id = id;
         this.email = email;
         this.username = username;
@@ -121,17 +125,11 @@ public class UserDTO {
         this.city = city;
         this.region = region;
         this.role = role;
-//        this.specialtyId = specialtyId;
-//        this.clinicId = clinicId;
+
         this.imageUrl = imageUrl;
         this.phoneNumber = phoneNumber;
+        this.age = age;
     }
 
-    //    public UserDTO(Long id, String email, String username, String city, String region, Object o) {
-//    }
-//    public UserDTO(Long id, String email, String username, Object o) {
-//        this.id = id;
-//        this.email = email;
-//        this.Username = Username;
-//    }
+
 }

@@ -2,6 +2,7 @@ package com.example.backendhealhub.service;
 
 
 import com.example.backendhealhub.dto.DoctorDTO;
+
 import java.util.List;
 
 public interface DoctorService {
@@ -15,5 +16,4 @@ public interface DoctorService {
     DoctorDTO update(Long id, DoctorDTO doctorDTO);
 
     void delete(Long id);
-    // Define other methods that you would like to implement
 }

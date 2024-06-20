@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-
     private final UserRepository userRepository;
 
     @Autowired
@@ -46,15 +45,8 @@ public class UserServiceImpl implements UserService {
     private ImageStorageService imageStorageService;
 
     private AuthenticationManager authenticationManager;
-
-
-    //    private RoleRepository roleRepository;
     private JWTGenerator jwtGenerator;
 
-    //    @Autowired
-//    public UserServiceImpl(UserRepository userRepository) {
-//        this.userRepository = userRepository;
-//    }
     public UserServiceImpl(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder, JWTGenerator jwtGenerator) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
@@ -71,26 +63,28 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setCity(userDTO.getCity());
         user.setRegion(userDTO.getRegion());
+        user.setType(userDTO.getRole());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
         user = userRepository.save(user);
-        return new UserDTO(user.getId(), user.getEmail(),
-                user.getUsername(), userDTO.getPassword(),
-                user.getCity(), user.getRegion()
 
-        );
+        if ("doctor".equals(user.getType())) {
+            Doctor doctor = new Doctor();
+            doctor.setUser(user);
+            doctor.setName(user.getUsername());
 
+            if (userDTO.getClinicId() != null && userDTO.getSpecialtyId() != null) {
+                Clinic clinic = clinicRepository.findById(userDTO.getClinicId())
+                        .orElseThrow(() -> new IllegalArgumentException("Clinic not found with ID: " + userDTO.getClinicId()));
+                Specialty specialty = specialtyRepository.findById(userDTO.getSpecialtyId())
+                        .orElseThrow(() -> new IllegalArgumentException("Specialty not found with ID: " + userDTO.getSpecialtyId()));
+                doctor.setClinic(clinic);
+                doctor.setSpecialty(specialty);
+            }
+            doctorRepository.save(doctor);
+        }
+
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), null, user.getCity(), user.getRegion(), user.getType());
     }
-
-//    @Override
-//    @Transactional
-//    public UserDTO updateUser(Long id, UserDTO userDTO) {
-//        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-//        user.setEmail(userDTO.getEmail());
-//        user.setUsername(userDTO.getUsername());
-//        user = userRepository.save(user);
-//        return new  UserDTO(user.getId(), user.getEmail(),
-//                user.getUsername(), userDTO.getPassword(),
-//                user.getCity(),user.getRegion());
-//    }
 
     @Override
     @Transactional
@@ -98,20 +92,42 @@ public class UserServiceImpl implements UserService {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        String previousRole = existingUser.getType();
         existingUser.setEmail(userDTO.getEmail());
         existingUser.setUsername(userDTO.getUsername());
         existingUser.setCity(userDTO.getCity());
         existingUser.setRegion(userDTO.getRegion());
-        existingUser.setType(userDTO.getRole());  // Assuming setType sets the user role
+        existingUser.setType(userDTO.getRole());
+        existingUser.setPhoneNumber(userDTO.getPhoneNumber());
 
-        if ("doctor".equalsIgnoreCase(userDTO.getRole()) && !doctorExistsForUser(existingUser)) {
-            Doctor doctor = new Doctor();
-            doctor.setName(existingUser.getUsername());
-            doctor.setUser(existingUser);
-            Specialty specialty = specialtyRepository.findById(userDTO.getSpecialtyId())
-                    .orElseThrow(() -> new RuntimeException("Specialty not found"));
-            doctor.setSpecialty(specialty);
-            doctorRepository.save(doctor);
+        if ("doctor".equalsIgnoreCase(userDTO.getRole())) {
+            if (!doctorExistsForUser(existingUser)) {
+                Doctor doctor = new Doctor();
+                doctor.setName(existingUser.getUsername());
+                doctor.setUser(existingUser);
+                Specialty specialty = specialtyRepository.findById(userDTO.getSpecialtyId())
+                        .orElseThrow(() -> new RuntimeException("Specialty not found"));
+                doctor.setSpecialty(specialty);
+                Clinic clinic = clinicRepository.findById(userDTO.getClinicId())
+                        .orElseThrow(() -> new RuntimeException("Clinic not found"));
+                doctor.setClinic(clinic);
+                doctorRepository.save(doctor);
+            } else {
+                // Update existing doctor record
+                Doctor doctor = doctorRepository.findByUserId(existingUser.getId());
+                doctor.setName(existingUser.getUsername());
+                doctor.setSpecialty(specialtyRepository.findById(userDTO.getSpecialtyId())
+                        .orElseThrow(() -> new RuntimeException("Specialty not found")));
+                doctor.setClinic(clinicRepository.findById(userDTO.getClinicId())
+                        .orElseThrow(() -> new RuntimeException("Clinic not found")));
+                doctorRepository.save(doctor);
+            }
+        } else if ("doctor".equalsIgnoreCase(previousRole) && !"doctor".equalsIgnoreCase(userDTO.getRole())) {
+            // Role changed from doctor to another role, delete doctor record
+            Doctor doctor = doctorRepository.findByUserId(existingUser.getId());
+            if (doctor != null) {
+                doctorRepository.delete(doctor);
+            }
         }
 
         userRepository.save(existingUser);
@@ -122,68 +138,55 @@ public class UserServiceImpl implements UserService {
         return doctorRepository.existsByUserId(user.getId());
     }
 
-
     @Override
+    @Transactional
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if ("doctor".equals(user.getType())) {
+            Doctor doctor = doctorRepository.findByUserId(user.getId());
+            if (doctor != null) {
+                doctorRepository.delete(doctor);
+            }
+        }
+
+        userRepository.delete(user);
     }
 
     @Override
     public UserDTO getUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(),
-                user.getPassword(), user.getCity(), user.getRegion()
-        );
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), user.getPassword(), user.getCity(), user.getRegion(), user.getType(), user.getPhoneNumber(), user.getAge());
     }
-
-    // Inside UserServiceImpl.java
 
     public UserDTO getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), user.getCity(), user.getRegion(), user.getType(), user.getImageUrl(),user.getPhoneNumber());
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), user.getCity(), user.getRegion(), user.getType(), user.getImageUrl(), user.getPhoneNumber(), user.getAge());
     }
 
     @Override
     public UserDTO getUserByName(String name) {
         User user = userRepository.findByEmail(name)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), user.getCity(), user.getRegion(), null);
-
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), user.getCity(), user.getRegion(), user.getType(), user.getPhoneNumber());
     }
-
 
     @Override
     public List<UserDTO> getAllUsers() {
-        return userRepository.findAll().stream().map(user -> new UserDTO(user.getId(), user.getEmail(), user.getUsername(), user.getCity(), user.getRegion(), user.getPassword())).collect(Collectors.toList());
+        return userRepository.findAll().stream()
+                .map(user -> new UserDTO(user.getId(), user.getEmail(), user.getUsername(), user.getCity(), user.getRegion(), user.getType(),
+                        user.getImageUrl(), user.getPhoneNumber(), user.getAge()))
+                .collect(Collectors.toList());
     }
 
-//    @Override
-//    @Transactional
-//    public UserDTO registerUser(UserDTO userDTO) {
-//        if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
-//            throw new RuntimeException("Email already in use");
-//        }
-//
-//        User user = new User();
-//        user.setEmail(userDTO.getEmail());
-//        user.setUsername(userDTO.getUsername());
-//        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-//        user.setCity(userDTO.getCity());
-//        user.setRegion(userDTO.getRegion());
-//        user = userRepository.save(user);
-//        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(),
-//                userDTO.getPassword(),user.getCity(),user.getRegion()
-//
-//
-//        );
-//    }
 
     @Override
     @Transactional
     public UserDTO registerUser(UserDTO userDTO) {
-        if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already in use");
+        if (userDTO.getEmail() == null || userDTO.getUsername() == null || userDTO.getPassword() == null) {
+            throw new IllegalArgumentException("Email, username, and password cannot be null");
         }
 
         User user = new User();
@@ -194,31 +197,30 @@ public class UserServiceImpl implements UserService {
         user.setRegion(userDTO.getRegion());
         user.setType(userDTO.getRole());
         user.setPhoneNumber(userDTO.getPhoneNumber());
+        user.setAge(userDTO.getAge());
+        userRepository.save(user);
 
-
-        user = userRepository.save(user);
-
-        if ("doctor".equalsIgnoreCase(userDTO.getRole())) {
+        if ("doctor".equals(user.getType())) {
             Doctor doctor = new Doctor();
+            doctor.setUser(user);
             doctor.setName(user.getUsername());
-            Specialty specialty = specialtyRepository.findById(userDTO.getSpecialtyId())
-                    .orElseThrow(() -> new RuntimeException("Specialty not found"));
-            doctor.setSpecialty(specialty);
+
+            if (userDTO.getClinicId() == null || userDTO.getSpecialtyId() == null) {
+                throw new IllegalArgumentException("Clinic and Specialty IDs must not be null for doctor creation");
+            }
 
             Clinic clinic = clinicRepository.findById(userDTO.getClinicId())
-                    .orElseThrow(() -> new RuntimeException("Clinic not found"));
-            doctor.setClinic(clinic);
+                    .orElseThrow(() -> new IllegalArgumentException("Clinic not found with ID: " + userDTO.getClinicId()));
+            Specialty specialty = specialtyRepository.findById(userDTO.getSpecialtyId())
+                    .orElseThrow(() -> new IllegalArgumentException("Specialty not found with ID: " + userDTO.getSpecialtyId()));
 
-            doctor.setUser(user);
+            doctor.setClinic(clinic);
+            doctor.setSpecialty(specialty);
             doctorRepository.save(doctor);
         }
 
-        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(),
-                userDTO.getPassword(), user.getCity(), user.getRegion(), userDTO.getRole(), userDTO.getSpecialtyId());
+        return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), null, user.getCity(), user.getRegion(), user.getType());
     }
-
-
-    // Inside UserServiceImpl.java
 
     public UserDTO loginUser(String email, String password) {
         User user = userRepository.findByEmail(email)
@@ -228,29 +230,8 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Invalid credentials");
         }
 
-
         return new UserDTO(user.getId(), user.getEmail(), user.getUsername(), user.getCity(), user.getRegion(), null); // Avoid returning the password
     }
-
-
-//    @PostMapping("login")
-//    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDto loginDto){
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                        loginDto.getUsername(),
-//                        loginDto.getPassword()));
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        String token = jwtGenerator.generateToken(authentication);
-//        return new ResponseEntity<>(new AuthResponseDTO(token), HttpStatus.OK);
-//    }
-
-//    @Transactional
-//    public void uploadUserImage(Long userId, MultipartFile file) {
-//        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-//        String imageUrl = imageStorageService.upload(file); // A service that handles the upload to a storage solution
-//        user.setImageUrl(imageUrl);
-//        userRepository.save(user);
-//    }
 
     @Override
     public UserDTO uploadUserImage(Long userId, MultipartFile file) {
@@ -261,4 +242,5 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(user, UserDTO.class); // Assuming you have a model mapper
     }
 }
+
 

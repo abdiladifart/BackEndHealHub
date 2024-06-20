@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .antMatchers("/clinics/search/**").permitAll()// Allow public access to search clinics
                 .antMatchers("/doctors/**").permitAll() // Allow public access to fetch doctors
                 .antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .antMatchers("/admin/**").hasAuthority("ADMIN")
 
                 .anyRequest().authenticated()
                 .and()

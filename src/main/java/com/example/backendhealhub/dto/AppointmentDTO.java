@@ -41,9 +41,6 @@ public class AppointmentDTO {
     @Getter
     @Setter
     private String location;
-//    @Getter @Setter
-//    private String patientName; // Add this property
-
 
     public AppointmentDTO(Long id, Long userId, Long doctorId, Long clinicId, Long specialtyId, LocalDateTime dateTime) {
         this.id = id;
@@ -54,19 +51,3 @@ public class AppointmentDTO {
         this.dateTime = dateTime;
     }
 }
-
-//    public AppointmentDTO(Long id, Long userId, Long doctorId, Long clinicId, Long specialtyId, LocalDateTime dateTime, String clinicName, String doctorName, String date, String time, String location, String patientName) {
-//        this.id = id;
-//        this.userId = userId;
-//        this.doctorId = doctorId;
-//        this.clinicId = clinicId;
-//        this.specialtyId = specialtyId;
-//        this.dateTime = dateTime;
-//        this.clinicName = clinicName;
-//        this.doctorName = doctorName;
-//        this.date = date;
-//        this.time = time;
-//        this.location = location;
-//        this.patientName = patientName;
-//    }
-//}

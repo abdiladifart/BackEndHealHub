@@ -3,7 +3,6 @@ package com.example.backendhealhub.service;
 import com.example.backendhealhub.dto.ClinicDTO;
 import com.example.backendhealhub.entity.Clinic;
 import com.example.backendhealhub.repository.ClinicRepository;
-import com.example.backendhealhub.service.ClinicService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,10 +23,12 @@ public class ClinicServiceImpl implements ClinicService {
         Clinic clinic = new Clinic();
         clinic.setName(clinicDTO.getName());
         clinic.setCity(clinicDTO.getCity());
-        clinic.setRegion(clinicDTO.getRegion());// Ensure this is set
+        clinic.setRegion(clinicDTO.getRegion());
+        clinic.setLongitude(clinicDTO.getLongitude());
+        clinic.setLatitude(clinicDTO.getLatitude());
 
         clinic = clinicRepository.save(clinic);
-        return modelMapper.map(clinic, ClinicDTO.class); // Assuming you're using ModelMapper
+        return modelMapper.map(clinic, ClinicDTO.class);
     }
 
 
@@ -37,13 +38,6 @@ public class ClinicServiceImpl implements ClinicService {
                 .map(clinic -> modelMapper.map(clinic, ClinicDTO.class))
                 .collect(Collectors.toList());
     }
-
-//    public List<ClinicDTO> getClinicsBySpecialtyAndLocation(Long specialtyId, String city, String region) {
-//        List<Clinic> clinics = clinicRepository.findBySpecialtyIdAndCityAndRegion(specialtyId, city, region);
-//        return clinics.stream()
-//                .map(clinic -> modelMapper.map(clinic, ClinicDTO.class))
-//                .collect(Collectors.toList());
-//    }
 
     public List<ClinicDTO> getClinicsBySpecialtyAndLocation(Long specialtyId, String city, String region) {
         List<Clinic> clinics = clinicRepository.findBySpecialtyIdAndCityAndRegion(specialtyId, city, region);
